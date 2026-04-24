@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  # 1. Core Service (Spring Boot)
+  backend-spring:
+    build:
+      context: ./backend-spring
+    container_name: nexus-core-spring
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/core/info"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 2. Logic Gateway (FastAPI)
+  api-fastapi:
+    build:
+      context: ./api-fastapi
+    container_name: nexus-gateway-fastapi
+    ports:
+      - "8000:8000"
+    environment:
+      - CORE_SERVICE_HOST=backend-spring
+    depends_on:
+      backend-spring:
+        condition: service_started
+    # Spring Boot가 완전히 뜰 때까지 기다리는 로직이 필요할 수 있으나, 
+    # FastAPI 코드가 에러 핸들링을 하므로 바로 실행해도 무방합니다.
+
+  # 3. Frontend (Next.js)
+  frontend-nextjs:
+    build:
+      context: ./frontend-nextjs
+    container_name: nexus-frontend-nextjs
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    depends_on:
+      - api-fastapi
+
+networks:
+  default:
+    name: nexus-network

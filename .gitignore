@@ -1,0 +1,61 @@
+# [ Integrated .gitignore for Nexus 3-Tier Project ]
+
+# --- OS Specific ---
+.DS_Store
+Thumbs.db
+*.swp
+
+# --- IDE Settings ---
+.vscode/
+.idea/
+*.iml
+*.iws
+*.ipr
+.project
+.classpath
+.settings/
+.factorypath
+
+# --- Node.js (Next.js) ---
+frontend-nextjs/node_modules/
+frontend-nextjs/.next/
+frontend-nextjs/out/
+frontend-nextjs/build/
+frontend-nextjs/.vercel
+frontend-nextjs/*.log
+frontend-nextjs/.env*.local
+
+# --- Python (FastAPI) ---
+api-fastapi/__pycache__/
+api-fastapi/*.py[cod]
+api-fastapi/*$py.class
+api-fastapi/.venv/
+api-fastapi/venv/
+api-fastapi/env/
+api-fastapi/.pytest_cache/
+api-fastapi/.env
+
+# --- Java (Spring Boot) ---
+backend-spring/target/
+backend-spring/bin/
+backend-spring/out/
+backend-spring/*.jar
+backend-spring/*.war
+backend-spring/*.zip
+backend-spring/*.tar.gz
+backend-spring/.mvn/wrapper/maven-wrapper.jar
+
+# --- Docker ---
+.docker/
+docker-compose.override.yml
+
+# --- Environment Variables ---
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# --- Logs ---
+*.log
+logs/
