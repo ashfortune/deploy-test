@@ -16,6 +16,7 @@ interface SystemStatus {
 }
 
 export default function Dashboard() {
+  const [showSuccess, setShowSuccess] = useState(true);
   const [status, setStatus] = useState<SystemStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -23,7 +24,6 @@ export default function Dashboard() {
   const fetchStatus = async () => {
     setLoading(true);
     try {
-      // 환경 변수가 있으면 사용하고 없으면 기본값 사용
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
       const res = await fetch(`${apiUrl}/api/v1/health`);
       if (!res.ok) throw new Error('Gateway Connection Failed');
@@ -38,10 +38,48 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    fetchStatus();
-    const interval = setInterval(fetchStatus, 5000); // 5초마다 갱신
-    return () => clearInterval(interval);
-  }, []);
+    if (!showSuccess) {
+      fetchStatus();
+      const interval = setInterval(fetchStatus, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [showSuccess]);
+
+  if (showSuccess) {
+    return (
+      <main className="flex flex-col items-center justify-center min-h-screen p-8 text-center bg-background">
+        <div className="relative mb-8">
+          <div className="absolute inset-0 bg-blue-500 blur-3xl opacity-20 animate-pulse"></div>
+          <div className="relative glass-card p-12 flex flex-col items-center animate-float">
+            <div className="w-24 h-24 bg-gradient-to-tr from-green-400 to-blue-500 rounded-full flex items-center justify-center mb-6 animate-success">
+              <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path>
+              </svg>
+            </div>
+            <h1 className="text-4xl font-black mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400">
+              Deployment Successful!
+            </h1>
+            <p className="text-gray-400 max-w-md mb-8">
+              대표님, 축하드립니다! 3-Tier 시스템이 성공적으로 클라우드에 안착했습니다. 모든 서비스가 온라인 상태입니다.
+            </p>
+            <button 
+              onClick={() => setShowSuccess(false)}
+              className="px-10 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-bold shadow-lg shadow-blue-900/20 transition-all hover:scale-105 active:scale-95"
+            >
+              Dashboard 입장하기
+            </button>
+          </div>
+        </div>
+        <div className="flex gap-4 text-sm text-gray-500 font-mono">
+          <span>Spring Boot: Online</span>
+          <span>•</span>
+          <span>FastAPI: Online</span>
+          <span>•</span>
+          <span>Next.js: Online</span>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="flex flex-col items-center justify-center min-h-screen p-8 max-w-5xl mx-auto">
@@ -52,12 +90,20 @@ export default function Dashboard() {
           </h1>
           <p className="text-gray-400">대표님을 위한 실시간 3-Tier 배포 모니터링 시스템</p>
         </div>
-        <button 
-          onClick={fetchStatus}
-          className="px-6 py-2 rounded-full bg-blue-600 hover:bg-blue-500 transition-colors font-medium"
-        >
-          Force Refresh
-        </button>
+        <div className="flex gap-4">
+          <button 
+            onClick={() => setShowSuccess(true)}
+            className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-sm"
+          >
+            Show Success
+          </button>
+          <button 
+            onClick={fetchStatus}
+            className="px-6 py-2 rounded-full bg-blue-600 hover:bg-blue-500 transition-colors font-medium"
+          >
+            Force Refresh
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
