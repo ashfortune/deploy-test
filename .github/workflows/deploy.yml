@@ -1,0 +1,25 @@
+name: Deploy to Home Server (WSL2)
+
+# 언제 이 스크립트를 실행할 것인가?
+on:
+  push:
+    branches: [ "main" ] # 본인의 기본 브랜치 이름(master 또는 main)에 맞게 수정하세요.
+
+jobs:
+  deploy:
+    # 어디서 실행할 것인가? (매우 중요: 깃허브 서버가 아닌 내 데스크탑에서 실행하라는 뜻)
+    runs-on: self-hosted
+
+    steps:
+      # 1. 깃허브에 올라온 최신 코드를 내 데스크탑(WSL2)으로 다운로드(Checkout) 합니다.
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 2. 다운로드한 코드를 바탕으로 기존 서버를 끄고 새 서버를 빌드하여 실행합니다.
+      - name: Build and Run with Docker Compose
+        run: |
+          echo "🚀 기존 컨테이너를 중지합니다..."
+          docker-compose down
+          
+          echo "📦 최신 코드로 이미지를 다시 빌드하고 백그라운드에서 실행합니다..."
+          docker-compose up -d --build
